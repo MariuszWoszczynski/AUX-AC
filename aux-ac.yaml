@@ -94,10 +94,9 @@ external_components:
 # Board Konfiguration
 uart:
   id: ac_uart_bus
-  # ATTENTION! For TX and RX use GPIO4 (D2) and GPIO5 (D1) for NodeMCU-like boards!
   # See docs for details: https://github.com/GrKoR/esphome_aux_ac_component/blob/87f686564e743e3b1d0965a6bbc5780a173abbd1/docs/HARDWARE-EN.md
-  rx_pin: GPIO20
-  tx_pin: GPIO21
+  rx_pin: GPIO20  #RX of the air conditioner for models manufactured before about Jul.2022, TX of the air conditioner for later modifications.
+  tx_pin: GPIO21  #TX of the air conditioner for models manufactured before about Jul.2022, RX of the air conditioner for later modifications.
   baud_rate: 4800
   data_bits: 8
   parity: EVEN
