@@ -3,7 +3,7 @@ dashboard_import:
   import_full_config: true
 
 substitutions:
-  name: "aux_ac"
+  name: "aux-ac"
   friendly_name: "AUX AC"
 
 esphome:
@@ -12,17 +12,22 @@ esphome:
   project:
     name: esphome.aux_ac
     version: "1.0"
-
+  platformio_options:
+    build_flags:
+      - -DARDUINO_USB_MODE=1
+      - -DARDUINO_USB_CDC_ON_BOOT=1
+      
 esp32:
-  board: lolin_c3_mini
+  board: lolin_s3_mini #lolin_c3_mini
   framework:
     type: arduino
 
+# Logi na USB
 logger:
-    level: DEBUG
+  level: DEBUG
+#  hardware_uart: USB_SERIAL_JTAG
 
-# Enable Home Assistant API
-api:
+api: 
   encryption:
     key: "q0M48mES8G278MS//dqgeOEV4dZ+CQTGp1CpPyRyLoA="
 
@@ -31,13 +36,13 @@ ota:
     password: "0336e0744b241439aa1f5b07c9761d7d"
 
 wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
+#  ssid: !secret wifi_ssid                  ############################ odkomentowaćsekcję wifi
+#  password: !secret wifi_password
+#  power_save_mode: NONE
+#  fast_connect: true
+  output_power: 8.5dBm                      ##############krytyczne - zostawić jak jest !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   ap:
     ssid: "AUX AC Fallback Hotspot"
- #   password: "GYF7BxOWOHoP"
 
 web_server:
   port: 80
@@ -45,121 +50,77 @@ web_server:
 
 captive_portal:
 
-# Status LED for connection
-status_led:
-  pin:
-    # Blue LED
-    number: GPIO8
-
-button:
-  # Restart the ESP
-  - platform: restart
-    name: "Restart - AUX AC"
-
-text_sensor:
-  # IP address and connected SSID
-  - platform: wifi_info
-    ip_address:
-      name: '${friendly_name} - IP Address'
-      icon: mdi:wifi
-    ssid:
-      name: '${friendly_name} - Connected SSID'
-      icon: mdi:wifi-strength-2
-      
-sensor:
-  - platform: wifi_signal # Reports the WiFi signal strength/RSSI in dB
-    name: "WiFi Signal dB"
-    id: wifi_signal_db
-    update_interval: 60s
-    entity_category: "diagnostic"
-
-  - platform: copy # Reports the WiFi signal strength in %
-    source_id: wifi_signal_db
-    name: "WiFi Signal Percent"
-    filters:
-      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
-    unit_of_measurement: "Signal %"
-    entity_category: "diagnostic"
-
-# Ermöglicht die Bereitstellung von WiFi-Anmeldeinformationen über Bluetooth LE (nur ESP32).
-esp32_improv:
-  authorizer: none
-
-# Externe Komponenten
 external_components:
   - source:
       type: git
       url: https://github.com/GrKoR/esphome_aux_ac_component
 
-# Board Konfiguration
 uart:
-  id: ac_uart_bus
-  # See docs for details: https://github.com/GrKoR/esphome_aux_ac_component/blob/87f686564e743e3b1d0965a6bbc5780a173abbd1/docs/HARDWARE-EN.md
-  rx_pin: GPIO20  #RX of the air conditioner for models manufactured before about Jul.2022, TX of the air conditioner for later modifications.
-  tx_pin: GPIO21  #TX of the air conditioner for models manufactured before about Jul.2022, RX of the air conditioner for later modifications.
-  baud_rate: 4800
-  data_bits: 8
-  parity: EVEN
-  stop_bits: 1
+  - id: ac_uart_bus
+    rx_pin: GPIO6     #GPIO20 #w C3         ########## Jak nie będzie komunikacji to zamienić GPIO TX i RX
+    tx_pin: GPIO7     #GPIO21 #w C3         ########## Jak nie będzie komunikacji to zamienić GPIO TX i RX
+    baud_rate: 4800
+    data_bits: 8
+    parity: EVEN
+    stop_bits: 1
 
-# Klimaanlagen Konfiguration
+
 climate:
   - platform: aux_ac
-    name: "${friendly_name}"
+    name: "AC Name"
     id: aux_id
     uart_id: ac_uart_bus
-    period: 7s
+    period: 7s 
     show_action: true
     display_inverted: false
     timeout: 150
-    optimistic: true
-    indoor_temperature:  # AC Indoor Temperature 
-      name: Indoor Temperature 
+    indoor_temperature:
+      name: AC Indoor Temperature
       id: ac_indoor_temp
       accuracy_decimals: 1
       internal: false
-    outdoor_temperature:  # AC Outdoor Temperature 
-      name: Outdoor Temperature 
+    outdoor_temperature:
+      name: AC Outdoor Temperature
       id: ac_outdoor_temp
       internal: false
-    outbound_temperature:  # AC Coolant Outbound Temperature 
-      name: Coolant Outbound Temperature 
+    outbound_temperature:
+      name: AC Coolant Outbound Temperature
       id: ac_outbound_temp
       internal: false
-    inbound_temperature:  # AC Coolant Inbound Temperature 
-      name: Coolant Inbound Temperature
+    inbound_temperature:
+      name: AC Coolant Inbound Temperature
       id: ac_inbound_temp
       internal: false
-    compressor_temperature:  # AC Compressor Temperature 
-      name: Compressor Temperature
+    compressor_temperature:
+      name: AC Compressor Temperature
       id: ac_strange_temp
       internal: false
-    display_state:  # AC Display State 
-      name: Display State 
+    display_state:
+      name: AC Display State
       id: ac_display_state
       internal: false
-    defrost_state:  # AC Defrost State 
-      name: Defrost State 
+    defrost_state:
+      name: AC Defrost State
       id: ac_defrost_state
       internal: false
-    inverter_power:  # AC Inverter Power 
-      name: Inverter Power
+    inverter_power:
+      name: AC Inverter Power
       id: ac_inverter_power
       internal: false
-    inverter_power_limit_value:  # AC Inverter Power Limit Value 
-      name: Inverter Power Limit Value
+    inverter_power_limit_value:
+      name: AC Inverter Power Limit Value
       id: ac_inverter_power_limit_value
       internal: false
-    inverter_power_limit_state:  # AC Inverter Power Limit State 
-      name: Inverter Power Limit State 
+    inverter_power_limit_state:
+      name: AC Inverter Power Limit State
       id: ac_inverter_power_limit_state
       internal: false
-    preset_reporter:  # AC Preset Reporter 
-      name: Preset Reporter 
+    preset_reporter:
+      name: AC Preset Reporter
       id: ac_preset_reporter
       internal: false
-    vlouver_state:  # AC Vertical Louvers State 
-      name: Vertical Louvers State 
+    vlouver_state:
+      name: AC Vertical Louvers State
       id: ac_vlouver_state
       internal: false
     visual:
