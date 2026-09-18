@@ -18,14 +18,14 @@ esphome:
       - -DARDUINO_USB_CDC_ON_BOOT=1
       
 esp32:
-  board: lolin_c3_mini   #lolin_s3_mini
+  board: lolin_c3_mini   
   framework:
     type: arduino
 
 # Logi na USB
 logger:
   level: DEBUG
-#  hardware_uart: USB_SERIAL_JTAG
+
 
 api: 
   encryption:
@@ -57,8 +57,8 @@ external_components:
 
 uart:
   - id: ac_uart_bus
-    rx_pin: GPIO20         #GPIO6 #w S3       ########## Jak nie będzie komunikacji to zamienić GPIO TX i RX
-    tx_pin: GPIO21         #GPIO7 #w S3       ########## Jak nie będzie komunikacji to zamienić GPIO TX i RX
+    rx_pin: GPIO20           ########## Jak nie będzie komunikacji to zamienić GPIO TX i RX
+    tx_pin: GPIO21           ########## Jak nie będzie komunikacji to zamienić GPIO TX i RX
     baud_rate: 4800
     data_bits: 8
     parity: EVEN
