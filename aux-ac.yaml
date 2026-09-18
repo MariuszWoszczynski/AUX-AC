@@ -55,6 +55,11 @@ external_components:
       type: git
       url: https://github.com/GrKoR/esphome_aux_ac_component
 
+status_led:
+  pin:
+    number: GPIO8
+    inverted: true
+    
 uart:
   - id: ac_uart_bus
     rx_pin: GPIO20           ########## Jak nie będzie komunikacji to zamienić GPIO TX i RX
